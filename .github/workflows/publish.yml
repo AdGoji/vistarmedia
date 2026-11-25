@@ -1,0 +1,30 @@
+name: Publish to clojars.org
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+
+      - uses: DeLaGuardo/setup-clojure@master
+        with:
+          cli: 'latest'
+
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Publish
+        env:
+          CLOJARS_PASSWORD: ${{ secrets.CLOJARS_PASSWORD }}
+          CLOJARS_USERNAME: ${{ secrets.CLOJARS_USERNAME }}
+        run: make clean jar publish
